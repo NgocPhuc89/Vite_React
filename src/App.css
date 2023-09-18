@@ -1,4 +1,4 @@
-#root {
+#singer {
   max-width: 600px;
   margin: 0 auto;
   padding: 2rem;
@@ -14,6 +14,14 @@
 
 #edit {
   display: none;
+}
+
+#cardbody {
+  height: 300px;
+}
+
+#name {
+  height: 25px;
 }
 
 /* .logo {

@@ -52,7 +52,7 @@ function SingerList() {
     }
 
     return (
-        <div>
+        <div id="singer">
             <h2 className="text-primary">Singer List</h2>
             <form onSubmit={addSinger} id="add" >
                 <div className="form-group d-flex align-items-center">
