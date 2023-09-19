@@ -1,8 +1,9 @@
+/* eslint-disable react/prop-types */
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 
-const CreateStudent = () => {
+const CreateStudent = ({ studentList, setStudentList }) => {
 
     const createSchema = yup.object({
 
@@ -23,7 +24,7 @@ const CreateStudent = () => {
             });
             if (response.ok) {
                 const data = await response.json();
-
+                setStudentList([...studentList, data])
                 console.log(data);
                 reset();
             } else {

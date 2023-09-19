@@ -1,13 +1,11 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react/jsx-key */
-import { useEffect, useState } from "react"
-import CreateStudent from "./CreateStudent";
+import { useEffect, useState } from "react";
 
-const StudentList = () => {
-    const [studentList, setStudentList] = useState([]);
+const StudentList = ({ studentList, setStudentList }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
-    const [action, setAction] = useState('next')
-    const [create, setCreate] = useState(false);
+    const [action, setAction] = useState('next');
     useEffect(() => {
         async function getStudent() {
             let response = await fetch(`https://js-post-api.herokuapp.com/api/students?_page=${currentPage}`);
@@ -47,55 +45,50 @@ const StudentList = () => {
 
 
     return (
-        <>
-            <button className="btn btn-primary ms-3" onClick={() => setCreate(!create)}>
-                Create Student</button>
-            {create && <CreateStudent />}
-            <div className="container mt-5">
-                <div>
-                    <h2 className="text-danger text-center">Student List</h2>
-                    <div className="d-flex justify-content-between mb-2">
-                        <div>
-                            <button type="button" className={`${currentPage == 1 ? 'btn btn-outline-primary me-1' : 'btn btn-outline-primary me-1'} ${action == 'first' ? 'active' : ''}`}
-                                onClick={first}>
-                                First</button>
-                            <button type="button" className={`${currentPage <= 1 ? 'btn btn-outline-primary me-1 disabled ' : 'btn btn-outline-primary me-1'} ${action == 'prev' ? 'active' : ''}`}
-                                onClick={prevPage}>Prev</button>
-                            <button type="button" className={`${currentPage >= totalPage ? 'btn btn-outline-primary me-1 disabled ' : 'btn btn-outline-primary me-1'} ${action == 'next' ? 'active' : ''}`}
-                                onClick={nextPage}>Next</button>
-                            <button type="button" className={`${currentPage == totalPage ? 'btn btn-outline-primary' : ' btn btn-outline-primary'} ${action == 'last' ? 'active' : ''} `}
-                                onClick={last}>
-                                Last</button>
-                        </div>
+        <div className="container mt-5">
+            <div>
+                <h2 className="text-danger text-center">Student List</h2>
+                <div className="d-flex justify-content-between mb-2">
+                    <div>
+                        <button type="button" className={`${currentPage == 1 ? 'btn btn-outline-primary me-1' : 'btn btn-outline-primary me-1'} ${action == 'first' ? 'active' : ''}`}
+                            onClick={first}>
+                            First</button>
+                        <button type="button" className={`${currentPage <= 1 ? 'btn btn-outline-primary me-1 disabled ' : 'btn btn-outline-primary me-1'} ${action == 'prev' ? 'active' : ''}`}
+                            onClick={prevPage}>Prev</button>
+                        <button type="button" className={`${currentPage >= totalPage ? 'btn btn-outline-primary me-1 disabled ' : 'btn btn-outline-primary me-1'} ${action == 'next' ? 'active' : ''}`}
+                            onClick={nextPage}>Next</button>
+                        <button type="button" className={`${currentPage == totalPage ? 'btn btn-outline-primary' : ' btn btn-outline-primary'} ${action == 'last' ? 'active' : ''} `}
+                            onClick={last}>
+                            Last</button>
                     </div>
                 </div>
-                <div className="row">
-                    {
-                        studentList.map((student) => (
-                            <div className="col-md-4 mb-3">
-                                <div id="cardbody" className="card">
-                                    <div className="card-body">
-                                        <h5 id="name" className="card-title text-primary">{student.name}</h5>
-                                        <p className="cart-text">#  {student.id}</p>
-                                        <p className="cart-text">Age : {student.age}</p>
-                                        <p className="cart-text">Mark : {student.mark}</p>
-                                        <p className="cart-text">Gender : {student.gender}</p>
-                                        <p className="fst-italic">City : {student.city}</p>
-                                        <i role="button" className="fa fa-pen me-3 btn btn-success" />
-                                        <i role="button" className="fa fa-trash me-1 btn btn-danger"
-                                            onClick={() => deleteStudent(student.name, student.id)} />
-                                    </div>
-                                    <div>
-                                        <img src="" alt="" />
-                                    </div>
+            </div>
+            <div className="row">
+                {
+                    studentList.map((student) => (
+                        <div className="col-md-4 mb-3">
+                            <div id="cardbody" className="card">
+                                <div className="card-body">
+                                    <h5 id="name" className="card-title text-primary">{student.name}</h5>
+                                    <p className="cart-text">#  {student.id}</p>
+                                    <p className="cart-text">Age : {student.age}</p>
+                                    <p className="cart-text">Mark : {student.mark}</p>
+                                    <p className="cart-text">Gender : {student.gender}</p>
+                                    <p className="fst-italic">City : {student.city}</p>
+                                    <i role="button" className="fa fa-pen me-3 btn btn-success" />
+                                    <i role="button" className="fa fa-trash me-1 btn btn-danger"
+                                        onClick={() => deleteStudent(student.name, student.id)} />
+                                </div>
+                                <div>
+                                    <img src="" alt="" />
                                 </div>
                             </div>
-                        ))
-                    }
+                        </div>
+                    ))
+                }
 
-                </div>
-            </div >
-        </>
+            </div>
+        </div >
     )
 }
 
