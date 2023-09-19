@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { SingerList } from "./SingerList";
-import { StudentList } from "./StudentList";
-import CreateStudent from "./CreateStudent";
+import { SingerList } from "./singer/SingerList";
+import { StudentList } from "./student/StudentList";
+import CreateStudent from "./student/CreateStudent";
 
 
 const UseEffect = () => {
