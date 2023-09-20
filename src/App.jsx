@@ -9,19 +9,25 @@ import Navbar from './component/layout/Navbar';
 import { Route, Routes } from 'react-router';
 import { StudentList } from './component/student/StudentList';
 import CreateStudent from './component/student/CreateStudent';
-import { useState } from 'react';
+import EditStudent from './component/student/EditStudent';
+import LeftSideBar from './component/layout/LeftSideBar';
+import Footer from './component/layout/Footer';
 
 
 function App() {
-  const [list, setList] = useState([]);
   return (
-    <>
-      <Navbar />
-      <Routes>
-        <Route path='/student/list' element={<StudentList studentList={list} setStudentList={setList} />} />
-        <Route path='/student/create' element={<CreateStudent studentList={list} setStudentList={setList} />} />
-      </Routes>
-    </>
+    <div className='d-flex'>
+      <LeftSideBar />
+      <div style={{ width: "100%" }}>
+        <Navbar />
+        <Routes>
+          <Route path='/student/list' element={<StudentList />} />
+          <Route path='/student/create' element={<CreateStudent />} />
+          <Route path='/student/edit/:studentId' element={<EditStudent />} />
+        </Routes>
+        <Footer />
+      </div>
+    </div>
   )
 }
 

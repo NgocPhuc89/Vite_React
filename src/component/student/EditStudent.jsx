@@ -1,16 +1,31 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-empty */
 /* eslint-disable react/prop-types */
-import { useForm } from "react-hook-form";
+/* eslint-disable no-inner-declarations */
+
 import { yupResolver } from "@hookform/resolvers/yup"
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useParams } from "react-router-dom";
 import * as yup from "yup"
 import StudentService from "../../services/studentService";
-import { useState } from "react";
-import swal from 'sweetalert';
 
-const CreateStudent = () => {
-    const [create, setCreate] = useState({});
-    const createSchema = yup.object({
+
+const EditStudent = () => {
+
+    const { studentId } = useParams();
+    const [update, setUpdate] = useState({});
+    useEffect(() => {
+        try {
+            async function getStu() {
+                let respo = await StudentService.getStudent(studentId);
+                setUpdate(respo.data)
+
+            }
+            getStu();
+        } catch (error) {
+            console.log(error);
+        }
+    }, [studentId])
+    const editSchema = yup.object({
         name: yup.string()
             .required("Vui Lòng Nhập Tên")
             .min(5, "Tên Phải Từ 5 Kí Tự ")
@@ -18,7 +33,7 @@ const CreateStudent = () => {
         age: yup.number()
             .required("Vui Lòng Nhập Tuổi")
             .positive()
-            .max(60, "Tuổi Không Được Lớn Hơn 50")
+            .max(50, "Tuổi Không Được Lớn Hơn 50")
             .typeError("Vui Lòng Nhập Tuổi"),
         city: yup.string()
             .required("Vui Lòng Nhập Thành Phố")
@@ -38,32 +53,38 @@ const CreateStudent = () => {
     })
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm({
-        resolver: yupResolver(createSchema)
+        resolver: yupResolver(editSchema),
+        values: update
     });
+    console.log(update);
 
-    const createStudent = async (value) => {
+
+    const editStudent = async (setValue) => {
         try {
-            await StudentService.postStudent(value)
-            setCreate(value);
-            // let response = await StudentService.postStudent(value);
-            // setStudentList([...studentList, response])
+            await StudentService.putStudent(studentId, setValue);
+            // let updateStu = [...studentList];
+            // const index = updateStu.findIndex(e => e.id === respo.data.id)
+            // updateStu[index] = respo.data;
+            setUpdate(setValue)
+            alert("Chỉnh Sửa Thành Công");
             reset();
-            swal("Chúc Mừng", "Thêm Mới Thành Công!!!", "success")
-            navigator("/student/list")
+            window.location.href('/student/list')
         } catch (error) {
-
+            console.log(error);
         }
     }
+
     return (
         <div className="container d-flex justify-content-center">
             <div className="row col-md-4 rounded mt-5" id="formAddStudent">
-                <h2 className="text-primary text-center mt-4">Create Student</h2>
-                <form onSubmit={handleSubmit(createStudent)}>
+                <h2 className="text-primary text-center mt-4">Edit Student</h2>
+                <form onSubmit={handleSubmit(editStudent)}>
                     <div className="form-group mb-3 ">
                         <label className="label-form">Name</label>
                         <input type="text" name="" id=""
                             className={`${errors?.name?.message ? 'form-control is-invalid' : 'form-control'}`}
-                            {...register('name')} />
+                            {...register('name')}
+                        />
                         <span className="invalid-feedback" >{errors?.name?.message}</span>
                     </div>
                     <div className="form-group mb-3 ">
@@ -95,7 +116,7 @@ const CreateStudent = () => {
                         </select>
                     </div>
                     <div className="d-flex justify-content-center mb-3">
-                        <button type="submit" className="btn btn-danger me-3">Create</button>
+                        <button type="submit" className="btn btn-danger me-3">Update</button>
                         <button type="button" className="btn btn-success"
                             onClick={() => reset()}>Cancel</button>
                     </div>
@@ -105,4 +126,4 @@ const CreateStudent = () => {
     )
 }
 
-export default CreateStudent;
+export default EditStudent;

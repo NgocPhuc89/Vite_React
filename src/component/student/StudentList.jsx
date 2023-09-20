@@ -6,8 +6,10 @@ import { useEffect, useState } from "react";
 import StudentService from "../../services/studentService";
 import { NavLink } from "react-router-dom";
 import Spinner from "../layout/Spinner";
+import swal from 'sweetalert';
 
-const StudentList = ({ studentList, setStudentList }) => {
+const StudentList = () => {
+    const [studentList, setStudentList] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
     const [action, setAction] = useState('next');
@@ -16,7 +18,7 @@ const StudentList = ({ studentList, setStudentList }) => {
         try {
             setLoading(true)
             async function getStudent() {
-                let response = await StudentService.getStudent(currentPage);
+                let response = await StudentService.getStudents(currentPage);
                 setStudentList(response.data.data);
                 setTotalPage(Math.ceil(
                     Number(response.data.pagination._totalRows) / Number(response.data.pagination._limit)));
@@ -46,9 +48,18 @@ const StudentList = ({ studentList, setStudentList }) => {
 
     const deleteStudent = async (student, id) => {
         try {
-            let confirm = window.confirm("Bạn Chắc Chắn Muốn Xóa " + student + " Khỏi Danh Sách");
-            confirm ? (StudentService.deleteStudent(id), alert("Xóa Thành Công"),
-                setStudentList((preList) => preList.filter((student) => student.id != id))) : ''
+            swal({
+                title: "Cảnh Báo!!",
+                text: "Bạn Chắc Chắn Muốn Xóa " + "<" + student + ">" + " Khỏi Danh Sách",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+                .then((del) => {
+                    del ? (StudentService.deleteStudent(id), swal("Thông Báo", "Xóa Thành Công" + "<" + student + ">" + " Khỏi Danh Sách", "success"),
+                        setStudentList((preList) => preList.filter((student) => student.id != id))) : ''
+                })
+
         } catch (error) {
 
         }
@@ -58,17 +69,17 @@ const StudentList = ({ studentList, setStudentList }) => {
         loading ? <Spinner /> :
             <div className="container mt-5">
                 <h2 className="text-danger text-center mt-4"> Student List</h2>
-                <button className="btn btn-sm btn-primary" style={{}}>
+                <button className="btn btn-sm btn-primary mt-4" style={{}}>
                     <NavLink className="nav-link " style={{ color: "white" }} to={'/student/create'}>
                         <i className="fa fa-plus me-2" />
                         Create
                     </NavLink>
                 </button>
-                <section>
+                <section className="mt-4">
 
                     <table className="table table-hover">
                         <thead>
-                            <tr>
+                            <tr className="tr">
                                 <th>#</th>
                                 <th>Name</th>
                                 <th>Age</th>
@@ -89,7 +100,10 @@ const StudentList = ({ studentList, setStudentList }) => {
                                         <td>{stu.gender}</td>
                                         <td>{stu.city}</td>
                                         <td>
-                                            <i role="button" className="fa fa-pen me-3 btn btn-success" />
+                                            <NavLink to={`/student/edit/${stu.id}`}>
+                                                <i role="button" className="fa fa-pen me-3 btn btn-success" />
+                                            </NavLink>
+
                                         </td>
                                         <td>
                                             <i role="button" className="fa fa-trash me-1 btn btn-danger"
