@@ -5,7 +5,7 @@ const Navbar = () => {
         <nav className="navbar navbar-expand-lg navbar-light " style={{ backgroundColor: "#e3f2fd" }}>
             <div className="container">
                 <a className="navbar-brand" href="#">
-                    Student
+                    #
                 </a>
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">

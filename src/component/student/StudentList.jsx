@@ -11,6 +11,7 @@ import swal from 'sweetalert';
 const StudentList = () => {
     const [studentList, setStudentList] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [city, setCity] = useState();
     const [totalPage, setTotalPage] = useState(0);
     const [action, setAction] = useState('next');
     const [loading, setLoading] = useState(false)
@@ -65,6 +66,11 @@ const StudentList = () => {
         }
     }
 
+    const searchByCity = (e) => {
+        console.log(e);
+
+    }
+
     return (
         loading ? <Spinner /> :
             <div className="container mt-5">
@@ -75,6 +81,17 @@ const StudentList = () => {
                         Create
                     </NavLink>
                 </button>
+                <div className="d-flex mt-4">
+                    <h5>City</h5>
+                    <select className="form-control ms-4" style={{ width: "250px" }}>
+                        {
+                            studentList.map((str) => (
+                                <option value={city} onClick={() => searchByCity(city)}>{str.city}</option>
+                            ))
+                        }
+                    </select>
+                </div>
+
                 <section className="mt-4">
 
                     <table className="table table-hover">

@@ -4,15 +4,17 @@
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import * as yup from "yup"
 import StudentService from "../../services/studentService";
+import swal from "sweetalert";
 
 
 const EditStudent = () => {
 
     const { studentId } = useParams();
     const [update, setUpdate] = useState({});
+    const back = useNavigate();
     useEffect(() => {
         try {
             async function getStu() {
@@ -66,9 +68,8 @@ const EditStudent = () => {
             // const index = updateStu.findIndex(e => e.id === respo.data.id)
             // updateStu[index] = respo.data;
             setUpdate(setValue)
-            alert("Chỉnh Sửa Thành Công");
-            reset();
-            window.location.href('/student/list')
+            swal("Chúc Mừng", "Chỉnh Sửa Thông Tin Thành Công", "success");
+            back('/')
         } catch (error) {
             console.log(error);
         }

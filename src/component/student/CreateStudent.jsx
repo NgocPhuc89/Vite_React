@@ -7,9 +7,12 @@ import * as yup from "yup"
 import StudentService from "../../services/studentService";
 import { useState } from "react";
 import swal from 'sweetalert';
+import { useNavigate } from "react-router-dom";
+
 
 const CreateStudent = () => {
     const [create, setCreate] = useState({});
+    const back = useNavigate();
     const createSchema = yup.object({
         name: yup.string()
             .required("Vui Lòng Nhập Tên")
@@ -45,11 +48,9 @@ const CreateStudent = () => {
         try {
             await StudentService.postStudent(value)
             setCreate(value);
-            // let response = await StudentService.postStudent(value);
-            // setStudentList([...studentList, response])
             reset();
             swal("Chúc Mừng", "Thêm Mới Thành Công!!!", "success")
-            navigator("/student/list")
+            back("/")
         } catch (error) {
 
         }

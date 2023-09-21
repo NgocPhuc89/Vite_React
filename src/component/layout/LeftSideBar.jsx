@@ -3,7 +3,7 @@ const LeftSideBar = () => {
     return (
         <div className="sidebar">
             <h3>
-                Left Side Bar
+                Menu
             </h3>
         </div>
     )
