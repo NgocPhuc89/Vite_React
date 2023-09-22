@@ -11,7 +11,7 @@ import swal from 'sweetalert';
 const StudentList = () => {
     const [studentList, setStudentList] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [city, setCity] = useState();
+    const [city, setCity] = useState("");
     const [totalPage, setTotalPage] = useState(0);
     const [action, setAction] = useState('next');
     const [loading, setLoading] = useState(false)
@@ -19,18 +19,23 @@ const StudentList = () => {
         try {
             setLoading(true)
             async function getStudent() {
-                let response = await StudentService.getStudents(currentPage);
+                let response;
+                city !== "" ? response = await StudentService.getStudentSearch(currentPage, city)
+                    : response = await StudentService.getStudents(currentPage)
+
                 setStudentList(response.data.data);
                 setTotalPage(Math.ceil(
                     Number(response.data.pagination._totalRows) / Number(response.data.pagination._limit)));
                 setLoading(false)
             }
             getStudent();
-
         } catch (error) {
 
         }
-    }, [currentPage])
+        return () => {
+
+        }
+    }, [currentPage, city])
 
     const nextPage = () => {
         currentPage < totalPage ? setCurrentPage(currentPage + 1)(setAction('next')) : ''
@@ -66,15 +71,17 @@ const StudentList = () => {
         }
     }
 
-    const searchByCity = (e) => {
-        console.log(e);
+    const listCity = [...new Set(studentList.map((str) => str.city))];
+    console.log(listCity);
 
+    const searchByCity = (e) => {
+        setCity(e.target.value);
     }
 
     return (
         loading ? <Spinner /> :
             <div className="container mt-5">
-                <h2 className="text-danger text-center mt-4"> Student List</h2>
+                <h1 className="text-danger text-center mt-4"> Student List</h1>
                 <button className="btn btn-sm btn-primary mt-4" style={{}}>
                     <NavLink className="nav-link " style={{ color: "white" }} to={'/student/create'}>
                         <i className="fa fa-plus me-2" />
@@ -83,11 +90,12 @@ const StudentList = () => {
                 </button>
                 <div className="d-flex mt-4">
                     <h5>City</h5>
-                    <select className="form-control ms-4" style={{ width: "250px" }}>
+                    <select className="form-control ms-4" style={{ width: "250px" }} onChange={(e) => searchByCity(e)}>
+                        <option value="" key="">--chọn--</option>
                         {
-                            studentList.map((str) => (
-                                <option value={city} onClick={() => searchByCity(city)}>{str.city}</option>
-                            ))
+                            listCity.map((city) => {
+                                return <option value={city}>{city}</option>
+                            })
                         }
                     </select>
                 </div>

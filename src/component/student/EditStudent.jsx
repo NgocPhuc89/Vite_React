@@ -20,7 +20,6 @@ const EditStudent = () => {
             async function getStu() {
                 let respo = await StudentService.getStudent(studentId);
                 setUpdate(respo.data)
-
             }
             getStu();
         } catch (error) {
@@ -30,8 +29,8 @@ const EditStudent = () => {
     const editSchema = yup.object({
         name: yup.string()
             .required("Vui Lòng Nhập Tên")
-            .min(5, "Tên Phải Từ 5 Kí Tự ")
-            .max(30, "Tên Phải Ít Hơn 30 Kí Tự "),
+            .min(5, "Tên Phải Từ 5 Kí Tự "),
+        // .max(30, "Tên Phải Ít Hơn 30 Kí Tự "),
         age: yup.number()
             .required("Vui Lòng Nhập Tuổi")
             .positive()
@@ -64,9 +63,6 @@ const EditStudent = () => {
     const editStudent = async (setValue) => {
         try {
             await StudentService.putStudent(studentId, setValue);
-            // let updateStu = [...studentList];
-            // const index = updateStu.findIndex(e => e.id === respo.data.id)
-            // updateStu[index] = respo.data;
             setUpdate(setValue)
             swal("Chúc Mừng", "Chỉnh Sửa Thông Tin Thành Công", "success");
             back('/')

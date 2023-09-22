@@ -11,13 +11,13 @@ const Navbar = () => {
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                         <li className="nav-item">
                             <NavLink className="nav-link " aria-current="page" to={"/student/list"}>
-                                Student List
+                                Student
                             </NavLink>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="#">
-                                Post List
-                            </a>
+                            <NavLink className="nav-link" to={'/post'} >
+                                Post
+                            </NavLink>
                         </li>
                         <li className="nav-item dropdown">
                             <a

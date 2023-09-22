@@ -28,7 +28,12 @@
   background-color: #dde4e9;
 }
 
-
+#formAddPost {
+  background-color: #b5e0e0;
+  height: 500px;
+  border-bottom-right-radius: 40px;
+  border-top-left-radius: 40px;
+}
 
 /* .logo {
   height: 6em;
