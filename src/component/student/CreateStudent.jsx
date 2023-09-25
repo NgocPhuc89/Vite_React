@@ -11,12 +11,17 @@ import { useEffect, useState } from "react";
 import swal from 'sweetalert';
 import { useNavigate } from "react-router-dom";
 import LocationRegionService from "../../services/locationRegionService";
+import { StudentList } from "./StudentList";
 
 
 const CreateStudent = () => {
     const [create, setCreate] = useState({});
     const [provinces, setProvinces] = useState([]);
-    const [locationRegion, setLocationRegion] = useState({});
+    const [locationRegion, setLocationRegion] = useState({
+        provinceId: 0,
+        provinceName: ''
+    });
+    const [district, setDistrict] = useState([]);
     const back = useNavigate();
     const createSchema = yup.object({
         name: yup.string()
@@ -57,6 +62,32 @@ const CreateStudent = () => {
         }
     }, [])
 
+    useEffect(() => {
+        try {
+            async function getAllDistrict() {
+                const districts = await LocationRegionService.getAllDistrict(provinces)
+                setDistrict(district.data.results)
+                console.log(districts);
+            }
+            getAllDistrict();
+        } catch (error) {
+
+        }
+    }, [provinces])
+
+    const onChangeProvince = async (e) => {
+        const provinceId = e.target.value;
+        const index = e.nativeEvent.target.selectedIndex;
+        const provinceName = e.nativeEvent.target[index].text;
+        setLocationRegion({
+            ...locationRegion,
+            provinceId,
+            provinceName
+
+        })
+
+    }
+
     const { register, handleSubmit, formState: { errors }, reset } = useForm({
         resolver: yupResolver(createSchema)
     });
@@ -73,6 +104,8 @@ const CreateStudent = () => {
 
         }
     }
+
+    console.log(provinces);
     return (
         <div className="container d-flex justify-content-center">
             <div className="row col-md-4 rounded mt-5" id="formAddStudent">
@@ -115,18 +148,39 @@ const CreateStudent = () => {
                     </div>
                     <div className="form-group mb-3 ">
                         <label className="label-form">Province</label>
-                        <select type="text" name="" id=""
+                        <select type="text"
+                            name="province"
+                            id="province"
+                            onChange={(e) => onChangeProvince(e)}
                             className={`${errors?.province?.message ? 'form-control is-invalid' : 'form-control'}`}
-                            {...register('city')} >
+                            {...register('province')} >
 
                             {
                                 provinces.length && provinces.map((item) => (
-                                    <option value={item.province_name} key={item.province_id}>{item.province_name}</option>
+                                    <option value={item.province_id} key={item.province_id}>{item.province_name}</option>
                                 ))
                             }
 
                         </select>
-                        <span className="invalid-feedback">{errors?.city?.message}</span>
+                        <span className="invalid-feedback">{errors?.province?.message}</span>
+                    </div>
+                    <div className="form-group mb-3 ">
+                        <label className="label-form">District</label>
+                        <select type="text"
+                            name="district"
+                            id="district"
+                            onChange={(e) => onChangeProvince(e)}
+                            className={`${errors?.district?.message ? 'form-control is-invalid' : 'form-control'}`}
+                            {...register('district')} >
+
+                            {
+                                provinces.length && provinces.map((item) => (
+                                    <option value={item.province_id} key={item.province_id}>{item.province_name}</option>
+                                ))
+                            }
+
+                        </select>
+                        <span className="invalid-feedback">{errors?.district?.message}</span>
                     </div>
                     <div className=" mb-3 ">
                         <label className="label-form">Farvorite
