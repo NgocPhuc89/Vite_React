@@ -12,7 +12,7 @@ import swal from "sweetalert";
 
 const EditStudent = () => {
 
-    const { studentId } = useParams();
+    const { studentId, page } = useParams();
     const [update, setUpdate] = useState({});
     const back = useNavigate();
     useEffect(() => {
@@ -65,7 +65,12 @@ const EditStudent = () => {
             await StudentService.putStudent(studentId, setValue);
             setUpdate(setValue)
             swal("Chúc Mừng", "Chỉnh Sửa Thông Tin Thành Công", "success");
-            back('/')
+            back('/', {
+                state: {
+                    page,
+                    id: studentId
+                }
+            })
         } catch (error) {
             console.log(error);
         }

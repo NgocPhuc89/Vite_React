@@ -4,17 +4,21 @@
 /* eslint-disable react/jsx-key */
 import { useEffect, useState } from "react";
 import StudentService from "../../services/studentService";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import Spinner from "../layout/Spinner";
 import swal from 'sweetalert';
 
 const StudentList = () => {
+    const id = useLocation().state?.id;
+    const page = useLocation().state?.page;
     const [studentList, setStudentList] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(page || 1);
     const [city, setCity] = useState("");
     const [totalPage, setTotalPage] = useState(0);
     const [action, setAction] = useState('next');
     const [loading, setLoading] = useState(false)
+    const [background, setBackground] = useState("pink");
+
     useEffect(() => {
         try {
             setLoading(true)
@@ -78,6 +82,30 @@ const StudentList = () => {
         setCity(e.target.value);
     }
 
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setBackground("white");
+        }, 1000 * 3)
+
+        return () => clearTimeout(timer)
+    }, [])
+
+    //cuộn xuống theo id và page
+    function scrollToElement(elementId) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            })
+        }
+    }
+    setTimeout(() => {
+        if (id && studentList.length > 0) {
+            scrollToElement(id);
+        }
+    }, 1000 * 1)
+
     return (
         loading ? <Spinner /> :
             <div className="container mt-5">
@@ -117,7 +145,7 @@ const StudentList = () => {
                         <tbody>
                             {
                                 studentList.map((stu) => (
-                                    <tr>
+                                    <tr key={stu.id} id={stu.id} style={{ background: stu.id === id ? background : "white" }}>
                                         <td>{stu.id}</td>
                                         <td>{stu.name}</td>
                                         <td>{stu.age}</td>
@@ -125,7 +153,7 @@ const StudentList = () => {
                                         <td>{stu.gender}</td>
                                         <td>{stu.city}</td>
                                         <td>
-                                            <NavLink to={`/student/edit/${stu.id}`}>
+                                            <NavLink to={`/student/edit/${stu.id}/${currentPage}`}>
                                                 <i role="button" className="fa fa-pen me-3 btn btn-success" />
                                             </NavLink>
 
@@ -145,8 +173,7 @@ const StudentList = () => {
                     <div className="d-flex justify-content-between mb-2">
                         <div>
                             <button type="button" className={`${currentPage == 1 ? 'btn btn-outline-primary me-1' : 'btn btn-outline-primary me-1'} ${action == 'first' ? 'active' : ''}`}
-                                onClick={first}>
-                                First</button>
+                                onClick={first}>First</button>
                             <button type="button" className={`${currentPage <= 1 ? 'btn btn-outline-primary me-1 disabled ' : 'btn btn-outline-primary me-1'} ${action == 'prev' ? 'active' : ''}`}
                                 onClick={prevPage}>Prev</button>
                             <button type="button" className={`${currentPage >= totalPage ? 'btn btn-outline-primary me-1 disabled ' : 'btn btn-outline-primary me-1'} ${action == 'next' ? 'active' : ''}`}
