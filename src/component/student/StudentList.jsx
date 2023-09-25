@@ -76,7 +76,6 @@ const StudentList = () => {
     }
 
     const listCity = [...new Set(studentList.map((str) => str.city))];
-    console.log(listCity);
 
     const searchByCity = (e) => {
         setCity(e.target.value);
@@ -139,6 +138,8 @@ const StudentList = () => {
                                 <th>Mark</th>
                                 <th>Gender</th>
                                 <th>City</th>
+                                <th>Province</th>
+                                <th>Favorite</th>
                                 <th colSpan={2}>Action</th>
                             </tr>
                         </thead>
@@ -152,14 +153,16 @@ const StudentList = () => {
                                         <td>{stu.mark}</td>
                                         <td>{stu.gender}</td>
                                         <td>{stu.city}</td>
+                                        <td>{stu.province}</td>
+                                        <td>{stu.favorite?.join(" , ")}</td>
                                         <td>
                                             <NavLink to={`/student/edit/${stu.id}/${currentPage}`}>
-                                                <i role="button" className="fa fa-pen me-3 btn btn-success" />
+                                                <i role="button" className="fa fa-edit me-3 btn btn-outline-success" />
                                             </NavLink>
 
                                         </td>
                                         <td>
-                                            <i role="button" className="fa fa-trash me-1 btn btn-danger"
+                                            <i role="button" className="fa fa-trash me-1 btn btn-outline-danger"
                                                 onClick={() => deleteStudent(stu.name, stu.id)} />
                                         </td>
                                     </tr>

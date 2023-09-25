@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-key */
+/* eslint-disable no-inner-declarations */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-empty */
 /* eslint-disable react/prop-types */
@@ -5,13 +7,16 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import StudentService from "../../services/studentService";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import swal from 'sweetalert';
 import { useNavigate } from "react-router-dom";
+import LocationRegionService from "../../services/locationRegionService";
 
 
 const CreateStudent = () => {
     const [create, setCreate] = useState({});
+    const [provinces, setProvinces] = useState([]);
+    const [locationRegion, setLocationRegion] = useState({});
     const back = useNavigate();
     const createSchema = yup.object({
         name: yup.string()
@@ -40,11 +45,24 @@ const CreateStudent = () => {
             })
     })
 
+    useEffect(() => {
+        try {
+            async function getALlProvinces() {
+                const provinces = await LocationRegionService.getAllProvince();
+                setProvinces(provinces.data.results)
+            }
+            getALlProvinces();
+        } catch (error) {
+
+        }
+    }, [])
+
     const { register, handleSubmit, formState: { errors }, reset } = useForm({
         resolver: yupResolver(createSchema)
     });
 
     const createStudent = async (value) => {
+        console.log(value);
         try {
             await StudentService.postStudent(value)
             setCreate(value);
@@ -82,6 +100,13 @@ const CreateStudent = () => {
                         <span className="invalid-feedback">{errors?.mark?.message}</span>
                     </div>
                     <div className="form-group mb-3 ">
+                        <label className="label-form">Gender</label>
+                        <select name="" id="" className="form-control" {...register('gender')}>
+                            <option value="male"  >Male</option>
+                            <option value="female" >Female</option>
+                        </select>
+                    </div>
+                    <div className="form-group mb-3 ">
                         <label className="label-form">City</label>
                         <input type="text" name="" id=""
                             className={`${errors?.city?.message ? 'form-control is-invalid' : 'form-control'}`}
@@ -89,11 +114,45 @@ const CreateStudent = () => {
                         <span className="invalid-feedback">{errors?.city?.message}</span>
                     </div>
                     <div className="form-group mb-3 ">
-                        <label className="label-form">Gender</label>
-                        <select name="" id="" className="form-control" {...register('gender')}>
-                            <option value="male"  >Male</option>
-                            <option value="female" >Female</option>
+                        <label className="label-form">Province</label>
+                        <select type="text" name="" id=""
+                            className={`${errors?.province?.message ? 'form-control is-invalid' : 'form-control'}`}
+                            {...register('city')} >
+
+                            {
+                                provinces.length && provinces.map((item) => (
+                                    <option value={item.province_name} key={item.province_id}>{item.province_name}</option>
+                                ))
+                            }
+
                         </select>
+                        <span className="invalid-feedback">{errors?.city?.message}</span>
+                    </div>
+                    <div className=" mb-3 ">
+                        <label className="label-form">Farvorite
+                            <div className="container d-flex ">
+                                <div>
+                                    <div className="form-check">
+                                        <input className="for-check-input me-2" type="checkbox" name="game" id="" value="game" {...register('favorite')} />
+                                        <label className="form-check-label" htmlFor="">Game</label>
+                                    </div>
+                                    <div className="form-check">
+                                        <input className="for-check-input me-2" type="checkbox" name="music" id="" value="music" {...register('favorite')} />
+                                        <label className="form-check-label" htmlFor="">Music</label>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="form-check">
+                                        <input className="for-check-input me-2" type="checkbox" name="football" id="" value="football" {...register('favorite')} />
+                                        <label className="form-check-label" htmlFor="">Football</label>
+                                    </div>
+                                    <div className="form-check">
+                                        <input className="for-check-input me-2" type="checkbox" name="swimming" id="" value="swimming" {...register('favorite')} />
+                                        <label className="form-check-label" htmlFor="">Swimming</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
                     </div>
                     <div className="d-flex justify-content-center mb-3">
                         <button type="submit" className="btn btn-danger me-3">Create</button>

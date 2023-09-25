@@ -117,6 +117,32 @@ const EditStudent = () => {
                             <option value="female" >Female</option>
                         </select>
                     </div>
+                    <div className=" mb-3 ">
+                        <label className="label-form">Farvorite
+                            <div className="container d-flex ">
+                                <div>
+                                    <div className="form-check">
+                                        <input className="for-check-input me-2" type="checkbox" name="game" id="" value="game" {...register('favorite')} />
+                                        <label className="form-check-label" htmlFor="">Game</label>
+                                    </div>
+                                    <div className="form-check">
+                                        <input className="for-check-input me-2" type="checkbox" name="music" id="" value="music" {...register('favorite')} />
+                                        <label className="form-check-label" htmlFor="">Music</label>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="form-check">
+                                        <input className="for-check-input me-2" type="checkbox" name="football" id="" value="football" {...register('favorite')} />
+                                        <label className="form-check-label" htmlFor="">Football</label>
+                                    </div>
+                                    <div className="form-check">
+                                        <input className="for-check-input me-2" type="checkbox" name="swimming" id="" value="swimming" {...register('favorite')} />
+                                        <label className="form-check-label" htmlFor="">Swimming</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
                     <div className="d-flex justify-content-center mb-3">
                         <button type="submit" className="btn btn-danger me-3">Update</button>
                         <button type="button" className="btn btn-success"
