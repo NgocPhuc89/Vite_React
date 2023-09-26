@@ -14,6 +14,9 @@ import LeftSideBar from './component/layout/LeftSideBar';
 import Footer from './component/layout/Footer';
 import PostList from './component/post/PostList';
 import CreatePost from './component/post/CreatePost';
+import TourList from './component/tour/TourList';
+import CreateTour from './component/tour/CreateTour';
+import EditTour from './component/tour/EditTour';
 
 
 
@@ -24,7 +27,9 @@ function App() {
       <div style={{ width: "100%" }}>
         <Navbar />
         <Routes>
-          <Route path='/' element={<StudentList />} />
+          <Route path='/tour/list' element={<TourList />} />
+          <Route path='/tour/create' element={<CreateTour />} />
+          <Route path='/tour/edit/:tourId' element={<EditTour />} />
           <Route path='/student/list' element={<StudentList />} />
           <Route path='/student/create' element={<CreateStudent />} />
           <Route path='/student/edit/:studentId/:page' element={<EditStudent />} />

@@ -8,6 +8,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import * as yup from "yup"
 import StudentService from "../../services/studentService";
 import swal from "sweetalert";
+import LocationRegionService from "../../services/locationRegionService";
 
 
 const EditStudent = () => {
@@ -15,11 +16,20 @@ const EditStudent = () => {
     const { studentId, page } = useParams();
     const [update, setUpdate] = useState({});
     const back = useNavigate();
+    const [locationRegion, setLocationRegion] = useState({
+        provinceId: 0,
+        provinceName: '',
+        districtId: 0,
+        districtName: '',
+        wardId: 0,
+        wardName: ''
+    });
     useEffect(() => {
         try {
             async function getStu() {
                 let respo = await StudentService.getStudent(studentId);
                 setUpdate(respo.data)
+                setLocationRegion(respo.data.locationRegion);
             }
             getStu();
         } catch (error) {
@@ -57,15 +67,92 @@ const EditStudent = () => {
         resolver: yupResolver(editSchema),
         values: update
     });
-    console.log(update);
 
+    const [provinces, setProvinces] = useState([]);
+
+    const [district, setDistrict] = useState([]);
+    const [ward, setWard] = useState([]);
+
+    useEffect(() => {
+        try {
+            async function getALlProvinces() {
+                const provinces = await LocationRegionService.getAllProvince();
+                setProvinces(provinces.data.results)
+            }
+            getALlProvinces();
+        } catch (error) {
+            console.log(error);
+        }
+    }, [])
+
+    const onChangeProvince = (e) => {
+        const provinceId = e.target.value;
+        const index = e.nativeEvent.target.selectedIndex;
+        const provinceName = e.nativeEvent.target[index].text;
+        getAllDistrict(provinceId);
+
+        setLocationRegion({
+            ...locationRegion,
+            provinceId,
+            provinceName
+        })
+    }
+
+    const getAllDistrict = async (id) => {
+        const district = await LocationRegionService.getAllDistrict(id);
+        setDistrict(district.data.results)
+    }
+
+    const onChangeDistrict = (e) => {
+        const districtId = e.target.value;
+        const index = e.nativeEvent.target.selectedIndex;
+        const districtName = e.nativeEvent.target[index].text;
+        getAllWard(districtId);
+
+        setLocationRegion({
+            ...locationRegion,
+            districtId,
+            districtName
+        })
+    }
+
+    const getAllWard = async (id) => {
+        const ward = await LocationRegionService.getAllWard(id);
+        setWard(ward.data.results)
+    }
+
+    const onChangeWard = (e) => {
+        const wardId = e.target.value;
+        const index = e.nativeEvent.target.selectedIndex;
+        const wardName = e.nativeEvent.target[index].text;
+
+        setLocationRegion({
+            ...locationRegion,
+            wardId,
+            wardName
+        })
+    }
 
     const editStudent = async (setValue) => {
         try {
-            await StudentService.putStudent(studentId, setValue);
-            setUpdate(setValue)
+            const data = {
+                ...setValue,
+                locationRegion: {
+                    provinceId: locationRegion.provinceId,
+                    provinceName: locationRegion.provinceName,
+                    districtId: locationRegion.districtId,
+                    districtName: locationRegion.districtName,
+                    wardId: locationRegion.wardId,
+                    wardName: locationRegion.wardName
+                }
+            }
+            delete data.province
+            delete data.district
+            delete data.ward
+            await StudentService.putStudent(studentId, data);
+            setUpdate(data)
             swal("Chúc Mừng", "Chỉnh Sửa Thông Tin Thành Công", "success");
-            back('/', {
+            back('/student/list', {
                 state: {
                     page,
                     id: studentId
@@ -76,6 +163,8 @@ const EditStudent = () => {
         }
     }
 
+    console.log(locationRegion);
+
     return (
         <div className="container d-flex justify-content-center">
             <div className="row col-md-4 rounded mt-5" id="formAddStudent">
@@ -85,8 +174,7 @@ const EditStudent = () => {
                         <label className="label-form">Name</label>
                         <input type="text" name="" id=""
                             className={`${errors?.name?.message ? 'form-control is-invalid' : 'form-control'}`}
-                            {...register('name')}
-                        />
+                            {...register('name')} />
                         <span className="invalid-feedback" >{errors?.name?.message}</span>
                     </div>
                     <div className="form-group mb-3 ">
@@ -104,19 +192,76 @@ const EditStudent = () => {
                         <span className="invalid-feedback">{errors?.mark?.message}</span>
                     </div>
                     <div className="form-group mb-3 ">
-                        <label className="label-form">City</label>
-                        <input type="text" name="" id=""
-                            className={`${errors?.city?.message ? 'form-control is-invalid' : 'form-control'}`}
-                            {...register('city')} />
-                        <span className="invalid-feedback">{errors?.city?.message}</span>
-                    </div>
-                    <div className="form-group mb-3 ">
                         <label className="label-form">Gender</label>
                         <select name="" id="" className="form-control" {...register('gender')}>
                             <option value="male"  >Male</option>
                             <option value="female" >Female</option>
                         </select>
                     </div>
+                    <div className="form-group mb-3 ">
+                        <label className="label-form">City</label>
+                        <input type="text" name="" id=""
+                            className={`${errors?.city?.message ? 'form-control is-invalid' : 'form-control'}`}
+                            {...register('city')} />
+                        <span className="invalid-feedback">{errors?.city?.message}</span>
+                    </div>
+
+                    <div className="form-group mb-3 ">
+                        <label className="label-form">Province</label>
+                        <select
+                            name="province"
+                            id=""
+                            className={`${errors?.province?.message ? 'form-control is-invalid' : 'form-control'}`}
+                            {...register('province')}
+                            onChange={onChangeProvince}
+                            value={locationRegion?.provinceId}>
+
+                            {
+                                provinces.length && provinces.map((item) => (
+                                    <option value={item.province_id} key={item.province_id}>{item.province_name}</option>
+                                ))
+                            }
+
+                        </select>
+                        <span className="invalid-feedback">{errors?.province?.message}</span>
+                    </div>
+                    <div className="form-group mb-3 ">
+                        <label className="label-form">District</label>
+                        <select
+                            name="district"
+                            id="district"
+                            className={`${errors?.district?.message ? 'form-control is-invalid' : 'form-control'}`}
+                            {...register('district')}
+                            onChange={onChangeDistrict} >
+                            <option value={locationRegion?.districtId} >{locationRegion?.districtName}</option>
+                            {
+                                district.length && district.map((item) => (
+                                    <option value={item.district_id} key={item.district_id}>{item.district_name}</option>
+                                ))
+                            }
+
+                        </select>
+                        <span className="invalid-feedback">{errors?.district?.message}</span>
+                    </div>
+                    <div className="form-group mb-3 ">
+                        <label className="label-form">Ward</label>
+                        <select
+                            name="ward"
+                            id="ward"
+                            className={`${errors?.ward?.message ? 'form-control is-invalid' : 'form-control'}`}
+                            {...register('ward')}
+                            onChange={onChangeWard}>
+                            <option value={locationRegion?.wardId}>{locationRegion?.wardName}</option>
+                            {
+                                ward.length && ward.map((item) => (
+                                    <option value={item.ward_id} key={item.ward_id}>{item.ward_name}</option>
+                                ))
+                            }
+
+                        </select>
+                        <span className="invalid-feedback">{errors?.ward?.message}</span>
+                    </div>
+
                     <div className=" mb-3 ">
                         <label className="label-form">Farvorite
                             <div className="container d-flex ">
@@ -144,7 +289,7 @@ const EditStudent = () => {
                         </label>
                     </div>
                     <div className="d-flex justify-content-center mb-3">
-                        <button type="submit" className="btn btn-danger me-3">Update</button>
+                        <button type="submit" className="btn btn-danger me-3">Edit</button>
                         <button type="button" className="btn btn-success"
                             onClick={() => reset()}>Cancel</button>
                     </div>

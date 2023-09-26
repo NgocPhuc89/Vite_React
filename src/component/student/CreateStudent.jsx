@@ -16,12 +16,7 @@ import { StudentList } from "./StudentList";
 
 const CreateStudent = () => {
     const [create, setCreate] = useState({});
-    const [provinces, setProvinces] = useState([]);
-    const [locationRegion, setLocationRegion] = useState({
-        provinceId: 0,
-        provinceName: ''
-    });
-    const [district, setDistrict] = useState([]);
+
     const back = useNavigate();
     const createSchema = yup.object({
         name: yup.string()
@@ -50,6 +45,18 @@ const CreateStudent = () => {
             })
     })
 
+    const [provinces, setProvinces] = useState([]);
+    const [locationRegion, setLocationRegion] = useState({
+        provinceId: 0,
+        provinceName: '',
+        districtId: 0,
+        districtName: '',
+        wardId: 0,
+        wardName: ''
+    });
+    const [district, setDistrict] = useState([]);
+    const [ward, setWard] = useState([]);
+
     useEffect(() => {
         try {
             async function getALlProvinces() {
@@ -62,31 +69,54 @@ const CreateStudent = () => {
         }
     }, [])
 
-    useEffect(() => {
-        try {
-            async function getAllDistrict() {
-                const districts = await LocationRegionService.getAllDistrict(provinces)
-                setDistrict(district.data.results)
-                console.log(districts);
-            }
-            getAllDistrict();
-        } catch (error) {
-
-        }
-    }, [provinces])
-
-    const onChangeProvince = async (e) => {
+    const onChangeProvince = (e) => {
         const provinceId = e.target.value;
         const index = e.nativeEvent.target.selectedIndex;
         const provinceName = e.nativeEvent.target[index].text;
+        getAllDistrict(provinceId);
+
         setLocationRegion({
             ...locationRegion,
             provinceId,
             provinceName
-
         })
-
     }
+
+    const getAllDistrict = async (id) => {
+        const district = await LocationRegionService.getAllDistrict(id);
+        setDistrict(district.data.results)
+    }
+
+    const onChangeDistrict = (e) => {
+        const districtId = e.target.value;
+        const index = e.nativeEvent.target.selectedIndex;
+        const districtName = e.nativeEvent.target[index].text;
+        getAllWard(districtId);
+
+        setLocationRegion({
+            ...locationRegion,
+            districtId,
+            districtName
+        })
+    }
+
+    const getAllWard = async (id) => {
+        const ward = await LocationRegionService.getAllWard(id);
+        setWard(ward.data.results)
+    }
+
+    const onChangeWard = (e) => {
+        const wardId = e.target.value;
+        const index = e.nativeEvent.target.selectedIndex;
+        const wardName = e.nativeEvent.target[index].text;
+
+        setLocationRegion({
+            ...locationRegion,
+            wardId,
+            wardName
+        })
+    }
+
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm({
         resolver: yupResolver(createSchema)
@@ -95,17 +125,31 @@ const CreateStudent = () => {
     const createStudent = async (value) => {
         console.log(value);
         try {
-            await StudentService.postStudent(value)
-            setCreate(value);
+            const data = {
+                ...value,
+                locationRegion: {
+                    provinceId: locationRegion.provinceId,
+                    provinceName: locationRegion.provinceName,
+                    districtId: locationRegion.districtId,
+                    districtName: locationRegion.districtName,
+                    wardId: locationRegion.wardId,
+                    wardName: locationRegion.wardName
+                }
+            }
+            delete data.province
+            delete data.district
+            delete data.ward
+            await StudentService.postStudent(data)
+            console.log(data);
+            setCreate(data);
             reset();
             swal("Chúc Mừng", "Thêm Mới Thành Công!!!", "success")
-            back("/")
+            back("/student/list")
         } catch (error) {
 
         }
     }
 
-    console.log(provinces);
     return (
         <div className="container d-flex justify-content-center">
             <div className="row col-md-4 rounded mt-5" id="formAddStudent">
@@ -146,15 +190,16 @@ const CreateStudent = () => {
                             {...register('city')} />
                         <span className="invalid-feedback">{errors?.city?.message}</span>
                     </div>
+
                     <div className="form-group mb-3 ">
                         <label className="label-form">Province</label>
-                        <select type="text"
+                        <select
                             name="province"
-                            id="province"
-                            onChange={(e) => onChangeProvince(e)}
+                            id=""
                             className={`${errors?.province?.message ? 'form-control is-invalid' : 'form-control'}`}
-                            {...register('province')} >
-
+                            {...register('province')}
+                            onChange={onChangeProvince}>
+                            <option value="">--Vui Lòng Chọn</option>
                             {
                                 provinces.length && provinces.map((item) => (
                                     <option value={item.province_id} key={item.province_id}>{item.province_name}</option>
@@ -166,22 +211,41 @@ const CreateStudent = () => {
                     </div>
                     <div className="form-group mb-3 ">
                         <label className="label-form">District</label>
-                        <select type="text"
+                        <select
                             name="district"
                             id="district"
-                            onChange={(e) => onChangeProvince(e)}
                             className={`${errors?.district?.message ? 'form-control is-invalid' : 'form-control'}`}
-                            {...register('district')} >
-
+                            {...register('district')}
+                            onChange={onChangeDistrict}>
+                            <option value="">--Vui Lòng Chọn</option>
                             {
-                                provinces.length && provinces.map((item) => (
-                                    <option value={item.province_id} key={item.province_id}>{item.province_name}</option>
+                                district.length && district.map((item) => (
+                                    <option value={item.district_id} key={item.district_id}>{item.district_name}</option>
                                 ))
                             }
 
                         </select>
                         <span className="invalid-feedback">{errors?.district?.message}</span>
                     </div>
+                    <div className="form-group mb-3 ">
+                        <label className="label-form">Ward</label>
+                        <select
+                            name="ward"
+                            id="ward"
+                            className={`${errors?.ward?.message ? 'form-control is-invalid' : 'form-control'}`}
+                            {...register('ward')}
+                            onChange={onChangeWard}>
+                            <option value="">--Vui Lòng Chọn</option>
+                            {
+                                ward.length && ward.map((item) => (
+                                    <option value={item.ward_id} key={item.ward_id}>{item.ward_name}</option>
+                                ))
+                            }
+
+                        </select>
+                        <span className="invalid-feedback">{errors?.ward?.message}</span>
+                    </div>
+
                     <div className=" mb-3 ">
                         <label className="label-form">Farvorite
                             <div className="container d-flex ">

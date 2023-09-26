@@ -31,6 +31,7 @@ const StudentList = () => {
                 setTotalPage(Math.ceil(
                     Number(response.data.pagination._totalRows) / Number(response.data.pagination._limit)));
                 setLoading(false)
+                console.log(studentList);
             }
             getStudent();
         } catch (error) {
@@ -139,6 +140,8 @@ const StudentList = () => {
                                 <th>Gender</th>
                                 <th>City</th>
                                 <th>Province</th>
+                                <th>District</th>
+                                <th>Ward</th>
                                 <th>Favorite</th>
                                 <th colSpan={2}>Action</th>
                             </tr>
@@ -153,7 +156,9 @@ const StudentList = () => {
                                         <td>{stu.mark}</td>
                                         <td>{stu.gender}</td>
                                         <td>{stu.city}</td>
-                                        <td>{stu.province}</td>
+                                        <td>{stu.locationRegion?.provinceName}</td>
+                                        <td>{stu.locationRegion?.districtName}</td>
+                                        <td>{stu.locationRegion?.wardName}</td>
                                         <td>{stu.favorite?.join(" , ")}</td>
                                         <td>
                                             <NavLink to={`/student/edit/${stu.id}/${currentPage}`}>
