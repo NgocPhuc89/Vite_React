@@ -5,8 +5,8 @@ class StudentService {
     static getStudents(page) {
         return axios.get(`https://js-post-api.herokuapp.com/api/students?_page=${page}`);
     }
-    static getStudentSearch(page, city) {
-        return axios.get(`https://js-post-api.herokuapp.com/api/students?_page=${page}&city=${city}`);
+    static getStudentSearch(page, search) {
+        return axios.get(`https://js-post-api.herokuapp.com/api/students?_page=${page}${search ? `&q=${encodeURIComponent(search)}` : ''}`);
     }
     static getStudent(id) {
         return axios.get(`https://js-post-api.herokuapp.com/api/students/${id}`);

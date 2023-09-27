@@ -27,6 +27,7 @@ function App() {
       <div style={{ width: "100%" }}>
         <Navbar />
         <Routes>
+          <Route path='/' element={<StudentList />} />
           <Route path='/tour/list' element={<TourList />} />
           <Route path='/tour/create' element={<CreateTour />} />
           <Route path='/tour/edit/:tourId' element={<EditTour />} />

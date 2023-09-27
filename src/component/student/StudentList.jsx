@@ -13,34 +13,35 @@ const StudentList = () => {
     const page = useLocation().state?.page;
     const [studentList, setStudentList] = useState([]);
     const [currentPage, setCurrentPage] = useState(page || 1);
-    const [city, setCity] = useState("");
     const [totalPage, setTotalPage] = useState(0);
     const [action, setAction] = useState('next');
     const [loading, setLoading] = useState(false)
     const [background, setBackground] = useState("pink");
+    const [search, setSearch] = useState('');
 
     useEffect(() => {
-        try {
-            setLoading(true)
-            async function getStudent() {
-                let response;
-                city !== "" ? response = await StudentService.getStudentSearch(currentPage, city)
-                    : response = await StudentService.getStudents(currentPage)
+        const timeout = setTimeout(() => {
+            try {
+                setLoading(true)
+                async function getStudent() {
+                    let response;
+                    search !== "" ? response = await StudentService.getStudentSearch(currentPage, search)
+                        : response = await StudentService.getStudents(currentPage)
 
-                setStudentList(response.data.data);
-                setTotalPage(Math.ceil(
-                    Number(response.data.pagination._totalRows) / Number(response.data.pagination._limit)));
-                setLoading(false)
-                console.log(studentList);
+                    setStudentList(response.data.data);
+                    setTotalPage(Math.ceil(
+                        Number(response.data.pagination._totalRows) / Number(response.data.pagination._limit)));
+                    setLoading(false)
+                    console.log(studentList);
+                }
+                getStudent();
+            } catch (error) {
+
             }
-            getStudent();
-        } catch (error) {
+        }, 1000)
 
-        }
-        return () => {
-
-        }
-    }, [currentPage, city])
+        return () => clearTimeout(timeout);
+    }, [currentPage, search])
 
     const nextPage = () => {
         currentPage < totalPage ? setCurrentPage(currentPage + 1)(setAction('next')) : ''
@@ -76,12 +77,6 @@ const StudentList = () => {
         }
     }
 
-    const listCity = [...new Set(studentList.map((str) => str.city))];
-
-    const searchByCity = (e) => {
-        setCity(e.target.value);
-    }
-
     useEffect(() => {
         const timer = setTimeout(() => {
             setBackground("white");
@@ -106,30 +101,47 @@ const StudentList = () => {
         }
     }, 1000 * 1)
 
+    const handleInput = (e) => {
+        handleSearch(e)
+        // e.preventDefault();
+        const value = e.target.value;
+        setSearch(value);
+        // setCurrentPage(1);
+    }
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        setCurrentPage(1);
+    }
+
     return (
         loading ? <Spinner /> :
             <div className="container mt-5">
                 <h1 className="text-danger text-center mt-4"> Student List</h1>
-                <button className="btn btn-sm btn-primary mt-4" style={{}}>
-                    <NavLink className="nav-link " style={{ color: "white" }} to={'/student/create'}>
-                        <i className="fa fa-plus me-2" />
-                        Create
-                    </NavLink>
-                </button>
-                <div className="d-flex mt-4">
-                    <h5>City</h5>
-                    <select className="form-control ms-4" style={{ width: "250px" }} onChange={(e) => searchByCity(e)}>
-                        <option value="" key="">--chọn--</option>
-                        {
-                            listCity.map((city) => {
-                                return <option value={city}>{city}</option>
-                            })
-                        }
-                    </select>
+
+                <div className="d-flex justify-content-between">
+                    <button className="btn btn-sm btn-primary mt-5" style={{}}>
+                        <NavLink className="nav-link " style={{ color: "white" }} to={'/student/create'}>
+                            <i className="fa fa-plus me-2" />
+                            Create
+                        </NavLink>
+                    </button>
+                    <form className="d-flex mt-5" role="search" onSubmit={handleSearch}>
+                        <input
+                            className="form-control me-2"
+                            type="search"
+                            placeholder="Search"
+                            aria-label="Search"
+                            value={search}
+                            onChange={(e) => handleInput(e)}
+                        />
+                        <button className="btn btn-outline-success" type="submit">
+                            Search
+                        </button>
+                    </form>
                 </div>
 
                 <section className="mt-4">
-
                     <table className="table table-hover">
                         <thead>
                             <tr className="tr">
