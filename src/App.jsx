@@ -17,6 +17,8 @@ import CreatePost from './component/post/CreatePost';
 import TourList from './component/tour/TourList';
 import CreateTour from './component/tour/CreateTour';
 import EditTour from './component/tour/EditTour';
+import { SingerList } from './component/singer/SingerList';
+import SongList from './component/song/songList';
 
 
 
@@ -36,6 +38,7 @@ function App() {
           <Route path='/student/edit/:studentId/:page' element={<EditStudent />} />
           <Route path='/post' element={<PostList />} />
           <Route path='/post/create' element={<CreatePost />} />
+          <Route path='/song/list' element={<SongList />} />
         </Routes>
         <Footer />
       </div>

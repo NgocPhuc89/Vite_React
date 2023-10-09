@@ -150,7 +150,7 @@ const EditStudent = () => {
             delete data.district
             delete data.ward
             await StudentService.putStudent(studentId, data);
-            setUpdate(data)
+            // setUpdate(data)
             swal("Chúc Mừng", "Chỉnh Sửa Thông Tin Thành Công", "success");
             back('/student/list', {
                 state: {

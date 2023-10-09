@@ -141,7 +141,7 @@ const CreateStudent = () => {
             delete data.ward
             await StudentService.postStudent(data)
             console.log(data);
-            setCreate(data);
+            // setCreate(data);
             reset();
             swal("Chúc Mừng", "Thêm Mới Thành Công!!!", "success")
             back("/student/list")
